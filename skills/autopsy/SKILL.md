@@ -46,8 +46,12 @@ Do NOT say "overall things look good" when it isn't. The dead don't need comfort
 ### 1. Find the scripts
 
 ```bash
-find ~ -maxdepth 4 -name "run.py" -path "*/autopsy/scripts/autopsy/*" 2>/dev/null | head -1
+find ~ -maxdepth 6 -type f -path "*/autopsy/scripts/autopsy/run.py" 2>/dev/null | head -1
 ```
+
+Depth 6, not 4. `run.py` sits five levels below `~` for the ordinary case of a clone
+into `~/repos/` or `~/code/`; a shallower search finds nothing and reports it as "not
+installed."
 
 If nothing: `git clone https://github.com/chickensintrees/autopsy`. `cd` to the repo. All commands run from there.
 
