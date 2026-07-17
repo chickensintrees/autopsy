@@ -19,7 +19,9 @@ Somewhere in it, a lesson was learned and then lost. A correction was given, ack
 - **Never draw the art yourself.** It drifts, it mangles, it costs tokens every run.
 - **Never `cat` it manually.** The banner is not yours to print; the script owns it. Cat it and the user sees it twice.
 - **Never pass `--banner=none`** unless you are piping stdout somewhere the art would corrupt.
-- **Show the user the banner.** It arrives on stderr. If your tooling swallows stderr, surface it anyway — the cold open is the ritual, and a ritual nobody sees is a chore.
+- **Show the user the banner.** It arrives on stderr — and stderr from a tool call is not shown to the user by default in most harnesses. The banner existing in a tool result and the user seeing it are two different things. Copy it verbatim into your reply before you say anything else. The cold open is the ritual, and a ritual nobody sees is a chore.
+
+*Real incident (2026-07-17): a run executed the scan, the banner printed correctly to stderr exactly as designed, and the agent still never showed it to the user — it read the tool output, then narrated straight into the findings without echoing the art. The user had to ask "why no boot screen???" Running the command is necessary. Pasting what it printed is a separate, required step, and the fact that the script "owns" the banner doesn't mean the user automatically sees it.*
 
 `--banner=minimal` for scheduled runs. `--banner=tape` if you want the other one.
 
