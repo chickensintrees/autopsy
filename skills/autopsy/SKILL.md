@@ -17,7 +17,7 @@ Somewhere in it, a lesson was learned and then lost. A correction was given, ack
 **`run.py` prints the cold open itself, on stderr, every run.** You do not have to do anything to get it — and you must not do anything to lose it.
 
 - **Never draw the art yourself.** It drifts, it mangles, it costs tokens every run.
-- **Never `cat` it manually.** The banner is not yours to print; the script owns it. Cat it and the user sees it twice.
+- **Never `cat` it manually.** The script already printed it. Catting it again just puts a second copy in a tool result the user still cannot see — wasted work that feels like progress.
 - **Never pass `--banner=none`** unless you are piping stdout somewhere the art would corrupt.
 - **Show the user the banner.** It arrives on stderr — and stderr from a tool call is not shown to the user by default in most harnesses. The banner existing in a tool result and the user seeing it are two different things. Copy it verbatim into your reply before you say anything else. The cold open is the ritual, and a ritual nobody sees is a chore.
 
