@@ -1,0 +1,15 @@
+{
+  "_comment": "Plugin hooks. Auto-registered when the autopsy plugin is enabled. The command probes for a working interpreter the same way install/enable does -- python3 first, falling back to python -- because a static 'python3' hits the Windows Store stub that resolves but exits 49. A shell that cannot run this degrades to a non-blocking no-op (the stop proceeds); enforcement is best-effort, never load-bearing. See hooks/check_banner_relay.py.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'p=python3; \"$p\" -c \"\" 2>/dev/null || p=python; exec \"$p\" \"$CLAUDE_PLUGIN_ROOT/hooks/check_banner_relay.py\"'"
+          }
+        ]
+      }
+    ]
+  }
+}

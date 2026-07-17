@@ -2,7 +2,7 @@
 name: autopsy
 description: Forensics for agentic work. Reads session records, finds what the system failed to retain — corrections that didn't stick, tools it forgot it had, rules that leaked — and turns each finding into a durable fix. Narrates like a forensic pathologist.
 user-invocable: true
-skill-version: 5
+skill-version: 6
 ---
 
 # Autopsy
@@ -71,7 +71,8 @@ Do NOT say "overall things look good" when it isn't. The dead don't need comfort
 **Do not ask the time range first.** Default to 7 days and say so afterward; they can rerun. The cold open lands in the first tool result, not the fourth.
 
 ```bash
-R="$(cat ~/.claude/skills/autopsy/repo-path 2>/dev/null)"; \
+R="${CLAUDE_PLUGIN_ROOT:-}"; \
+[ -n "$R" ] && [ -f "$R/scripts/autopsy/run.py" ] || R="$(cat ~/.claude/skills/autopsy/repo-path 2>/dev/null)"; \
 [ -f "$R/scripts/autopsy/run.py" ] || R="$(find ~ -maxdepth 6 -type f -path '*/autopsy/scripts/autopsy/run.py' 2>/dev/null | head -1 | xargs -r dirname | xargs -r dirname | xargs -r dirname)"; \
 P=python3; python3 -c "" 2>/dev/null || P=python; \
 cd "$R" && "$P" scripts/autopsy/run.py --days 7
@@ -83,7 +84,8 @@ Why one command: each separate step is a round trip, and four round trips is a m
 
 **What that line does, so you can repair it rather than reinvent it:**
 
-- **`repo-path`** — a breadcrumb the installer left. Install is the one moment the repo location is known for free. Reading it costs nothing; searching `$HOME` costs seconds, and far more on a Mac home full of `Library` and iCloud.
+- **`CLAUDE_PLUGIN_ROOT`** — set when autopsy is installed as a plugin; the scripts live under it. Tried first, and empty (harmlessly skipped) for a clone install.
+- **`repo-path`** — a breadcrumb the installer left for a clone install. Install is the one moment the repo location is known for free. Reading it costs nothing; searching `$HOME` costs seconds, and far more on a Mac home full of `Library` and iCloud.
 - **The `find` fallback** — only for an un-installed clone. Depth 6, because `run.py` sits five levels below `~` for a clone into `~/repos/` or `~/code/`. Depth 4 finds nothing and looks exactly like "not installed."
 - **`python3 -c ""`** — a *run*, not a `command -v`. Windows ships a `python3` stub that resolves on PATH, advertises the Microsoft Store, and exits 49. A dead interpreter is a finding about the box, not the body; don't report it as damage.
 

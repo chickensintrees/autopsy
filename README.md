@@ -51,23 +51,27 @@ A **sidecar** is durable context beside the thing it explains. A **breadcrumb** 
 
 ## Install
 
-macOS / Linux:
+**As a plugin (one step, recommended).** In Claude Code:
+
+```
+/plugin marketplace add chickensintrees/autopsy
+/plugin install autopsy@chickensintrees
+```
+
+That registers the `/autopsy` skill and the banner-relay hook. Nothing to clone.
+
+**By cloning (no plugins, or you want the scripts on disk):**
 
 ```bash
-git clone https://github.com/chickensintrees/autopsy.git
-cd autopsy
-./install.sh
+# macOS / Linux
+git clone https://github.com/chickensintrees/autopsy.git && cd autopsy && ./install.sh
 ```
-
-Windows (PowerShell):
-
 ```powershell
-git clone https://github.com/chickensintrees/autopsy.git
-cd autopsy
-.\install.ps1
+# Windows
+git clone https://github.com/chickensintrees/autopsy.git; cd autopsy; .\install.ps1
 ```
 
-Then run `/autopsy` in Claude Code.
+Then run `/autopsy`. With the clone path, the banner hook is opt-in — `python hooks/enable.py`.
 
 Python 3.8+. Standard library only, no dependencies. Sessions are read from `~/.claude/projects/`.
 

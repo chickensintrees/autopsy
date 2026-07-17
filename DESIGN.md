@@ -170,6 +170,30 @@ The name and the voice hold each other up. Kill the metaphor and you kill the co
    Mechanical guardrail: **no finding without a quote and a line number.** The voice
    narrates evidence; it never manufactures it.
 
+### Plugin packaging (2026-07-17)
+
+Colleagues install in one step: `/plugin marketplace add chickensintrees/autopsy`,
+`/plugin install autopsy@chickensintrees`. `.claude-plugin/plugin.json` +
+`.claude-plugin/marketplace.json` + `hooks/hooks.json`.
+
+Design choices:
+
+- **One SKILL.md, both worlds.** Step 1 resolves `run.py` via `${CLAUDE_PLUGIN_ROOT}`
+  first (plugin install), then the installer breadcrumb (clone install), then `find`.
+  A plugin fork and a clone fork would drift; there is one file.
+- **The plugin hook can't probe the interpreter.** `enable.py` picks `python`
+  vs `python3` by running it — a static `hooks.json` can't. So the hook command is
+  shell-form doing the same probe inline (`python3` then `python`), because a static
+  `python3` hits the Windows Store stub that resolves and exits 49. Verified on this
+  box, whose `python3` IS that stub: the fallback fires and the hook runs. A shell that
+  can't run it degrades to a non-blocking no-op — enforcement is never load-bearing.
+- **What's verified vs not.** All executable parts are tested: manifests are valid JSON
+  referencing real files (fixture test), the skill command resolves via each path, the
+  hook command runs including the stub fallback, 51 tests green. NOT verified from here:
+  the actual `/plugin install` discovery, because that's an interactive TUI flow no
+  script can drive. The manifests follow the confirmed doc schema; the install itself
+  needs one real-world smoke test.
+
 ### The banner relay, and why it ended in a hook
 
 The rule "paste the banner into your reply" failed, in the wild, five times across the

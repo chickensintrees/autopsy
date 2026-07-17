@@ -1,0 +1,10 @@
+{
+  "name": "autopsy",
+  "description": "Forensics for agentic work. Reads Claude Code session logs, finds what the system failed to retain -- corrections that didn't stick, tools it forgot it had, rules that leaked -- and turns each finding into a durable fix. Narrates like a forensic pathologist.",
+  "version": "1.0.0",
+  "author": { "name": "Bill Moore", "url": "https://github.com/chickensintrees" },
+  "homepage": "https://github.com/chickensintrees/autopsy",
+  "repository": "https://github.com/chickensintrees/autopsy",
+  "license": "MIT",
+  "keywords": ["forensics", "compaction", "sessions", "agentic", "claude-code"]
+}
