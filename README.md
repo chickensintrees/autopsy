@@ -39,11 +39,15 @@ A diagnostic tells you the cause of death. A mechanism changes the system so it 
 |---|---|---|
 | A correction you gave twice | A rule | CLAUDE.md / memory |
 | A capability it forgot it had | Tool or skill docs | the skill, the harness |
-| A decision relitigated | A decision record | the repo |
+| A decision relitigated | A sidecar + a breadcrumb | a dated note, and a one-line pointer to it |
 | A banned word that keeps leaking | A hook that blocks it | settings.json |
 | A manual step repeated by hand | A script | a skill |
 
 The report is exhaust. The rule is the output. Autopsy drafts the artifact and shows you the diff; you approve it.
+
+**Artifacts are ranked by durability, not category: test > hook > lint rule > sidecar > comment.** A test is a lesson that cannot rot — it fails when the lesson is forgotten. A hook is a lesson that cannot be skipped. A sidecar is prose, and prose decays silently into confident wrongness, which is worse than absent because it's still believed. So anything testable becomes a test; sidecars are only for the residue that can't be made executable — why X over Y, what was already tried, which obvious idea is a trap.
+
+A **sidecar** is durable context beside the thing it explains. A **breadcrumb** is a one-line pointer at the point of confusion, aimed at that sidecar. Neither works alone: a sidecar nobody points at is never read, and a breadcrumb pointing at nothing is noise. Both get anchored to something checkable — a date, a commit, a session, a line. An unanchored breadcrumb is a rumor.
 
 ## Install
 

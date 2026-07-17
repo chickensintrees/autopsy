@@ -116,13 +116,47 @@ This is the step that makes it a mechanism. Every finding gets an address:
 |---|---|---|
 | A correction given twice | A rule | CLAUDE.md / memory |
 | A capability it forgot it had | Tool or skill docs | the skill, the harness |
-| A decision relitigated | A decision record | the repo |
+| A decision relitigated | A sidecar + a breadcrumb | see below |
 | A banned word that keeps leaking | A hook that blocks it | settings.json |
 | A manual step done by hand repeatedly | A script | a skill |
 
 Draft the artifact. Show the diff. **Get approval before writing.** Then write it.
 
 A finding with no artifact is a finding you will meet again.
+
+#### Rank the artifact by durability, not by category
+
+Reach for the most durable form the finding allows. In order:
+
+**test > hook > lint rule > sidecar > comment**
+
+- A **test** is a lesson that cannot rot. It fails when the lesson is forgotten.
+- A **hook** is a lesson that cannot be skipped. The harness enforces it.
+- A **lint rule** is a lesson the tooling repeats for you.
+- A **sidecar** is prose. It decays silently and becomes confidently wrong — worse than absent, because it's still believed.
+- A **comment** is a sidecar nobody indexed.
+
+Anything testable becomes a test. Sidecars are for the residue that can't be made executable: why X was chosen over Y, what was already tried, which obvious idea is a trap. If you are about to write prose that could have been an assertion, write the assertion.
+
+#### Sidecars and breadcrumbs
+
+Two halves of one pattern. Neither works alone.
+
+A **sidecar** is durable context beside the thing it explains — `auth.py` and `decisions/2026-07-auth-retry.md`. It holds the reasoning.
+
+A **breadcrumb** is a pointer at the point of confusion, aimed at the sidecar:
+
+```python
+# see: decisions/2026-07-auth-retry.md
+```
+
+A sidecar nobody points at is never read. A breadcrumb pointing at nothing is noise. Content plus index — the same shape as a memory index and its files.
+
+**A breadcrumb is a pointer, not an explanation.** One line, aimed at a file. It is not permission to re-litigate the decision in a comment; that's talking to the reviewer, and it's noise the moment the change merges. If the breadcrumb is longer than the thing it points to is worth, delete it.
+
+**Anchor everything to something checkable.** A session id, a commit SHA, a line number, a date. This skill's own two-pass rule carries the run that discovered it. An unanchored breadcrumb is a rumor: the reader can't verify it, can't date it, and can't tell whether it survived the last refactor.
+
+**Sidecars rot.** That is their defining failure, and it is the same failure as memory: a sidecar records what was true when it was written. Date it. Anchor it. And when a later run finds a sidecar contradicting the code, that contradiction is itself a finding — the artifact lied, and a lie in the record is worse than a gap.
 
 ### 7. Stamp the tag
 

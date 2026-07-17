@@ -64,6 +64,45 @@ capability the harness never advertised.
 A run that ends in beautifully narrated recommendations is still a report. The skill
 writes the rule, adds the hook, updates the doc — **with approval at the gate**.
 
+### Rank artifacts by durability, not category
+
+**test > hook > lint rule > sidecar > comment.** Added 2026-07-17.
+
+A test is a lesson that cannot rot; it fails when the lesson is forgotten. A hook is a
+lesson that cannot be skipped. A sidecar is prose, and prose decays silently into
+confident wrongness — worse than absent, because it is still believed. Anything
+testable becomes a test. Sidecars carry only the residue that cannot be made
+executable: why X over Y, what was already tried, which obvious idea is a trap.
+
+*Evidence for the ranking, from this repo's own first week: the fixture tests have
+caught every real defect in the PR loop, while the prose instructions have needed
+three corrections (the boot ordering bug, the stderr-visibility gap, and the stale
+"sees it twice" rationale orphaned by fixing the second). The executable artifacts
+held. The prose kept rotting.*
+
+### Sidecars and breadcrumbs
+
+Content and index; neither works alone. A **sidecar** is durable context beside the
+thing it explains. A **breadcrumb** is a one-line pointer at the point of confusion,
+aimed at the sidecar. A sidecar nobody points at is never read; a breadcrumb pointing
+at nothing is noise. Same shape as a memory index and its files.
+
+Constraints:
+
+- **A breadcrumb is a pointer, not an explanation.** One line, aimed at a file. Not
+  license to re-litigate a decision in a comment — that is talking to the reviewer,
+  and it is noise the moment the change merges.
+- **Anchor to something checkable**: session id, commit SHA, line number, date. The
+  two-pass rule carries the run that discovered it. An unanchored breadcrumb is a
+  rumor.
+- **Sidecars rot**, and that is their defining failure — the same failure as memory: a
+  sidecar records what was true when written. A later run finding a sidecar that
+  contradicts the code has found a *finding*: the artifact lied, and a lie in the
+  record is worse than a gap.
+
+Rejected: putting this in a global rules file. The artifact map is autopsy's output
+contract, and a rule the emitting mechanism cannot read is a rule that does not run.
+
 ### 4. It is measurable, and that replaces the severity score
 
 The current `Damage Level: SEVERE/HIGH/MODERATE` is a vanity metric. Nothing consumes
