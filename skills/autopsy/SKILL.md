@@ -52,37 +52,35 @@ Do NOT say "overall things look good" when it isn't. The dead don't need comfort
 
 ## Procedure
 
-### 1. Find the scripts
+### 1. Run it. One command.
+
+**Do not ask the time range first.** Default to 7 days and say so afterward; they can rerun. The cold open lands in the first tool result, not the fourth.
 
 ```bash
-find ~ -maxdepth 6 -type f -path "*/autopsy/scripts/autopsy/run.py" 2>/dev/null | head -1
+R="$(cat ~/.claude/skills/autopsy/repo-path 2>/dev/null)"; \
+[ -f "$R/scripts/autopsy/run.py" ] || R="$(find ~ -maxdepth 6 -type f -path '*/autopsy/scripts/autopsy/run.py' 2>/dev/null | head -1 | xargs -r dirname | xargs -r dirname | xargs -r dirname)"; \
+P=python3; python3 -c "" 2>/dev/null || P=python; \
+cd "$R" && "$P" scripts/autopsy/run.py --days 7
 ```
 
-Depth 6, not 4. `run.py` sits five levels below `~` for the ordinary case of a clone
-into `~/repos/` or `~/code/`; a shallower search finds nothing and reports it as "not
-installed."
+Then **paste the banner from that tool result into your reply before anything else.**
 
-If nothing: `git clone https://github.com/chickensintrees/autopsy`. `cd` to the repo. All commands run from there.
+Why one command: each separate step is a round trip, and four round trips is a minute of the user staring at nothing before the ritual starts. The scan itself takes under a second.
 
-### 2. Pick an interpreter that actually works
+**What that line does, so you can repair it rather than reinvent it:**
 
-Do not check whether `python3` exists. Windows ships a stub that resolves on PATH and only advertises the Microsoft Store. Run it:
+- **`repo-path`** — a breadcrumb the installer left. Install is the one moment the repo location is known for free. Reading it costs nothing; searching `$HOME` costs seconds, and far more on a Mac home full of `Library` and iCloud.
+- **The `find` fallback** — only for an un-installed clone. Depth 6, because `run.py` sits five levels below `~` for a clone into `~/repos/` or `~/code/`. Depth 4 finds nothing and looks exactly like "not installed."
+- **`python3 -c ""`** — a *run*, not a `command -v`. Windows ships a `python3` stub that resolves on PATH, advertises the Microsoft Store, and exits 49. A dead interpreter is a finding about the box, not the body; don't report it as damage.
 
-```bash
-python3 -c "print(1)" 2>/dev/null || python -c "print(1)"
-```
+If `$R` is empty, it isn't installed: `git clone https://github.com/chickensintrees/autopsy && cd autopsy && ./install.sh`.
 
-Use whichever prints. A dead interpreter is a finding about the box, not the body — don't report it as damage.
-
-### 3. Run the scan
-
-Ask the time range. Default to 7 days.
+Other runs, once you're in the repo:
 
 ```bash
-python scripts/autopsy/run.py --days 7
 python scripts/autopsy/run.py --days 7 --banned-words glowing luminous bokeh
 python scripts/autopsy/run.py --days 7 --banned-file ~/banned.txt
-python scripts/autopsy/run.py --days 7 -o report.md
+python scripts/autopsy/run.py --days 30 -o report.md
 ```
 
 ### 4. Read the evidence. Then narrate.

@@ -13,6 +13,10 @@ foreach ($dir in Get-ChildItem -Path $SkillsDir -Directory) {
     $dest = Join-Path $TargetDir $dir.Name
     if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Path $dest -Force | Out-Null }
     Copy-Item $src (Join-Path $dest "SKILL.md") -Force
+    # Breadcrumb: the skill reads this instead of searching $HOME. Install is the one
+    # moment the repo path is known for free; a find at run time costs seconds on
+    # every invocation.
+    Set-Content -Path (Join-Path $dest "repo-path") -Value $ScriptDir -Encoding ascii
     Write-Host "  Installed: $($dir.Name) -> $dest\SKILL.md"
     $Installed++
 }

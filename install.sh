@@ -13,6 +13,10 @@ for skill_path in "$SKILLS_DIR"/*/SKILL.md; do
     name="$(basename "$(dirname "$skill_path")")"
     mkdir -p "$TARGET_DIR/$name"
     cp "$skill_path" "$TARGET_DIR/$name/SKILL.md"
+    # Breadcrumb: the skill reads this instead of searching $HOME. Install is the
+    # one moment the repo path is known for free; a find at run time costs seconds
+    # (much worse on a Mac home full of Library/iCloud) on every single invocation.
+    printf '%s\n' "$SCRIPT_DIR" > "$TARGET_DIR/$name/repo-path"
     echo "  Installed: $name -> $TARGET_DIR/$name/SKILL.md"
     INSTALLED=$((INSTALLED + 1))
 done
