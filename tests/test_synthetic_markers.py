@@ -34,3 +34,21 @@ class TestSkillBootInjection(unittest.TestCase):
         # Only the real user message should be flagged, not the injected skill body.
         self.assertEqual(len(frustrations), 1)
         self.assertIn("How many times", frustrations[0]["msg"])
+
+
+class TestMarkerIsPrefixAnchored(unittest.TestCase):
+    """The guard the contributor's fixture was missing: proof the filter is not too
+    broad. A real, angry user who *quotes* "Base directory for this skill:" mid-
+    sentence is still talking. This FAILS on the `in`-match shipped in 2a46fab and
+    passes only once the marker is prefix-anchored. Without it, anyone discussing
+    skills has their frustration silently deleted — the dangerous direction."""
+
+    def test_human_quoting_the_marker_is_not_synthetic(self):
+        s = parse_session(os.path.join(FIXTURES, "skill-quote-not-injection.jsonl"))
+        self.assertFalse(s.messages[0].is_synthetic)
+
+    def test_human_quoting_the_marker_still_registers_frustration(self):
+        s = parse_session(os.path.join(FIXTURES, "skill-quote-not-injection.jsonl"))
+        frustrations = find_user_frustration(s)
+        self.assertEqual(len(frustrations), 1)
+        self.assertIn("How many times", frustrations[0]["msg"])

@@ -186,13 +186,25 @@ def parse_message(line_number: int, obj: dict) -> Optional[Message]:
 
     is_synthetic = is_compact_summary
     if msg_type == "user" and content_text and not is_synthetic:
-        synthetic_markers = [
+        # Injected content that REPLACES the user message: the harness prepends this,
+        # and the rest of the message is skill prose, not speech. Prefix-anchored,
+        # because a human quoting the phrase mid-sentence is still a human talking.
+        # (2a46fab shipped this as an `in` match; that silently dropped real
+        # frustration signals that happened to quote the string — anyone discussing
+        # skills. See tests/test_synthetic_markers.py. Fixed 2026-07-17.)
+        synthetic_prefixes = (
+            "Base directory for this skill:",
+        )
+        # Injected content that can appear ANYWHERE, including appended to real text.
+        synthetic_anywhere = (
             "This session is being continued from a previous conversation",
             "<task-notification",
             "<system-reminder",
-            "Base directory for this skill:",
-        ]
-        is_synthetic = any(marker in content_text for marker in synthetic_markers)
+        )
+        is_synthetic = (
+            content_text.startswith(synthetic_prefixes)
+            or any(marker in content_text for marker in synthetic_anywhere)
+        )
 
     return Message(
         line_number=line_number,

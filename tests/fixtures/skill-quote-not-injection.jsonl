@@ -1,0 +1,1 @@
+{"type": "user", "sessionId": "fix3", "uuid": "u1", "timestamp": "2026-01-01T00:00:00Z", "message": {"role": "user", "content": [{"type": "text", "text": "How many times do I have to tell you: the skill header should say \"Base directory for this skill:\" and it doesn't. Did you actually look at the file?"}]}}
