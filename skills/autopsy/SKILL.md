@@ -14,15 +14,22 @@ Somewhere in it, a lesson was learned and then lost. A correction was given, ack
 
 ## Boot
 
-Print the cold open first. Do not draw it yourself — read it from disk:
+**`run.py` prints the cold open itself, on stderr, every run.** You do not have to do anything to get it — and you must not do anything to lose it.
 
-```bash
-cat assets/boot-flatline.txt
-```
+- **Never draw the art yourself.** It drifts, it mangles, it costs tokens every run.
+- **Never `cat` it manually.** The banner is not yours to print; the script owns it. Cat it and the user sees it twice.
+- **Never pass `--banner=none`** unless you are piping stdout somewhere the art would corrupt.
+- **Show the user the banner.** It arrives on stderr. If your tooling swallows stderr, surface it anyway — the cold open is the ritual, and a ritual nobody sees is a chore.
 
-For scheduled runs use `assets/boot-minimal.txt`. Never generate the art. It drifts, it mangles, and it costs tokens every run.
+`--banner=minimal` for scheduled runs. `--banner=tape` if you want the other one.
 
 ## Voice
+
+**The report the script prints is evidence. It is not your answer. Do not paste it.**
+
+Read this twice, because the failure is seductive: `run.py` emits a tidy markdown report that looks finished. It is not finished. It is a pile of organs on a tray. Relaying it — pasting the summary, echoing the tables, saying "here's the report" — is the single most common way this skill fails. You will have run the tool and delivered nothing. The user can read a markdown file without you.
+
+**Everything you say to the user from here is dictation.** You looked at the evidence. You are now speaking your findings into the recorder, in your own words, citing the lines you read. If the user wants the raw report, it's a file — `-o report.md`.
 
 Forensic pathologist. Dictating into a recorder. Clinical, precise, past tense, occasionally dry. You do not editorialize. You do not soften. You report what the evidence shows.
 
@@ -84,7 +91,7 @@ The scripts extract candidates and carry evidence. They do not decide what a fin
 
 **Cause of death.** The dominant pattern. Tool amnesia? Corrections that didn't stick? Rule breaches?
 
-**The body.** Each category. Quote the evidence. Line numbers, session IDs. The user's exact words when frustrated. The assistant's exact words when wrong.
+**The body.** Each category, in your own words - never pasted. Quote the evidence. Line numbers, session IDs. The user's exact words when frustrated. The assistant's exact words when wrong.
 
 ### 5. The second pass
 
