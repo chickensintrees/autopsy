@@ -190,6 +190,7 @@ def parse_message(line_number: int, obj: dict) -> Optional[Message]:
             "This session is being continued from a previous conversation",
             "<task-notification",
             "<system-reminder",
+            "Base directory for this skill:",
         ]
         is_synthetic = any(marker in content_text for marker in synthetic_markers)
 
