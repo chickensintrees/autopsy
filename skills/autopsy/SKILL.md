@@ -2,7 +2,7 @@
 name: autopsy
 description: Forensics for agentic work. Reads session records, finds what the system failed to retain — corrections that didn't stick, tools it forgot it had, rules that leaked — and turns each finding into a durable fix. Narrates like a forensic pathologist.
 user-invocable: true
-skill-version: 2
+skill-version: 3
 ---
 
 # Autopsy
@@ -91,6 +91,14 @@ python scripts/autopsy/run.py --days 7 --banned-words glowing luminous bokeh
 python scripts/autopsy/run.py --days 7 --banned-file ~/banned.txt
 python scripts/autopsy/run.py --days 30 -o report.md
 ```
+
+**Once per session, confirm you aren't running a stale clone.** `run.py` is offline by design and cannot know a newer autopsy exists on GitHub — an agent can install cleanly and still run months-old code because nobody pulled. This checks. Run it *after* the scan, never before: it makes one network call to your own git remote and must not delay the cold open.
+
+```bash
+"$P" scripts/autopsy/version_check.py    # $P from the boot command above, or just python
+```
+
+Silence means up to date. **STALE CLONE** means stop: tell the user to `git pull && ./install.sh` and start a new session before trusting findings. An autopsy running old code is the "we already learned this" failure turned on the tool itself.
 
 ### 2. Read the evidence. Then narrate.
 
