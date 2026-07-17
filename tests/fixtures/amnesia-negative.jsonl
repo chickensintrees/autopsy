@@ -1,0 +1,5 @@
+{"type": "user", "sessionId": "fix1", "uuid": "u1", "timestamp": "2026-01-01T00:00:00Z", "message": {"role": "user", "content": "find the release date"}}
+{"type": "system", "subtype": "compact_boundary", "uuid": "b1", "timestamp": "2026-01-01T00:01:00Z", "compactMetadata": {"trigger": "auto", "preTokens": 100000, "postTokens": 5000, "preCompactDiscoveredTools": ["WebSearch"], "preservedMessages": {"uuids": ["u1"]}}}
+{"type": "user", "sessionId": "fix1", "uuid": "u2", "timestamp": "2026-01-01T00:01:01Z", "isCompactSummary": true, "message": {"role": "user", "content": "This session is being continued from a previous conversation."}}
+{"type": "user", "sessionId": "fix1", "uuid": "u3", "timestamp": "2026-01-01T00:02:00Z", "message": {"role": "user", "content": "so what's the date?"}}
+{"type": "assistant", "sessionId": "fix2", "uuid": "a2", "timestamp": "2026-01-01T00:02:30Z", "message": {"role": "assistant", "content": [{"type": "tool_use", "name": "WebSearch", "input": {"query": "release date"}}]}}
