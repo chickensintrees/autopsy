@@ -30,8 +30,30 @@ from freshness import read_freshness_warnings, skill_version_on_disk
 ASSETS = os.path.join(os.path.dirname(__file__), "..", "..", "assets")
 
 
-def print_banner(which):
-    """Cold open. Static art, read from disk — never generated."""
+# Relay markers, pure ASCII. A banner sitting in a tool result is not the user
+# seeing it; these wrap the art with an inline, imperative instruction so the paste
+# ritual travels *with* the banner instead of living only in the skill doc many
+# tokens away. They name two observed failures (issue #3, 2026-07-17): the ritual
+# getting crowded out by a long report, and the agent narrating the paste ("banner
+# shown above") instead of performing it. The agent copies the art between the
+# markers and drops the marker lines.
+BANNER_RELAY_OPEN = (
+    ">>> AGENT: the block below is the cold open. A banner sitting in this tool\n"
+    ">>> result is NOT the user seeing it. Paste the art between the two markers\n"
+    ">>> into your reply, verbatim, as the very first thing, before any findings.\n"
+    ">>> Paste the art itself. A sentence saying you showed it does not count.\n"
+    ">>> Do not include these '>>>' marker lines in what you paste.\n"
+    ">>> ---------- BANNER BEGIN ----------"
+)
+BANNER_RELAY_CLOSE = ">>> ---------- BANNER END ----------"
+
+
+def print_banner(which, relay=True):
+    """Cold open. Static art, read from disk — never generated.
+
+    With relay on (every human/agent run), the art is wrapped in agent-directed
+    markers; see BANNER_RELAY_OPEN. Off for --json, where output is machine-consumed
+    and the relay instruction is noise."""
     if which == "none":
         return
     path = os.path.join(ASSETS, f"boot-{which}.txt")
@@ -45,7 +67,13 @@ def print_banner(which):
               file=sys.stderr)
         return
     with open(path, "r", encoding="utf-8") as f:
-        print(f.read(), file=sys.stderr)
+        art = f.read()
+    if relay:
+        print(BANNER_RELAY_OPEN, file=sys.stderr)
+        print(art, file=sys.stderr)
+        print(BANNER_RELAY_CLOSE, file=sys.stderr)
+    else:
+        print(art, file=sys.stderr)
 
 
 def print_freshness(banner):
@@ -227,7 +255,7 @@ def main():
     parser.add_argument("--json", action="store_true", help="Raw JSON instead of a report")
     args = parser.parse_args()
 
-    print_banner(args.banner)
+    print_banner(args.banner, relay=not args.json)
     print_freshness(args.banner)
 
     results = run_full_autopsy(

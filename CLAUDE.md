@@ -36,8 +36,8 @@ Prefer ground truth to inference. `preCompactDiscoveredTools` records what the a
 
 ## Conventions
 
-- **The script owns the banner.** `run.py` prints it on stderr every run. Never draw it, never `cat` it, never `--banner=none` except when piping. Echo it into the reply — stderr in a tool result is not the user seeing it.
-- **Pure ASCII in the boot art and every `.ps1`.** It has to render in Git Bash, PowerShell, and Windows Terminal without code-page roulette.
+- **The script owns the banner.** `run.py` prints it on stderr every run. Never draw it, never `cat` it, never `--banner=none` except when piping. Echo it into the reply — stderr in a tool result is not the user seeing it. The art ships wrapped in `>>>` relay markers (`BANNER_RELAY_OPEN`/`CLOSE`); the agent pastes the lines between them and drops the markers. Markers are suppressed under `--json`. Added for issue #3 (2026-07-17), after the relay instruction failed twice in one day — once by omission, once by narration ("banner delivered above").
+- **Pure ASCII in the boot art, the relay markers, and every `.ps1`.** It has to render in Git Bash, PowerShell, and Windows Terminal without code-page roulette.
 - **Cite the finding that caused a change**, with a date. The skill is a lesson ledger with citations; the two-pass rule carries the run that discovered it.
 - Compaction is a *cause*, not the category. The category is: a lesson that didn't survive.
 - The `isCompactSummary` message after a compaction is that compaction's payload — not a second boundary, not a user message.

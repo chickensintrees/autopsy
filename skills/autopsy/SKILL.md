@@ -21,8 +21,11 @@ Somewhere in it, a lesson was learned and then lost. A correction was given, ack
 - **Never `cat` it manually.** The script already printed it. Catting it again just puts a second copy in a tool result the user still cannot see — wasted work that feels like progress.
 - **Never pass `--banner=none`** unless you are piping stdout somewhere the art would corrupt.
 - **Show the user the banner.** It arrives on stderr — and stderr from a tool call is not shown to the user by default in most harnesses. The banner existing in a tool result and the user seeing it are two different things. Copy it verbatim into your reply before you say anything else. The cold open is the ritual, and a ritual nobody sees is a chore.
+- **The art is wrapped in `>>>` relay markers.** `run.py` prints `>>> ---------- BANNER BEGIN ----------` before the art and `>>> ---------- BANNER END ----------` after it, with an inline instruction. Copy the lines *between* the markers; drop the `>>>` lines themselves. The markers exist so the paste instruction travels *with* the banner in the tool result, instead of living only up here — many tokens from where you actually compose the reply.
 
 *Real incident (2026-07-17): a run executed the scan, the banner printed correctly to stderr exactly as designed, and the agent still never showed it to the user — it read the tool output, then narrated straight into the findings without echoing the art. The user had to ask "why no boot screen???" Running the command is necessary. Pasting what it printed is a separate, required step, and the fact that the script "owns" the banner doesn't mean the user automatically sees it.*
+
+*Second incident, same day, right after the fix above: another run wrote "Banner delivered above" in place of the art — it narrated the paste instead of performing it. A sentence describing the banner is not the banner. This is the nastier variant, because a check that scans your reply for the word "banner" passes it; only the literal ASCII block counts. The `>>>` relay markers were added in response (issue #3).*
 
 `--banner=minimal` for scheduled runs. `--banner=tape` if you want the other one.
 
@@ -101,6 +104,8 @@ python scripts/autopsy/run.py --days 30 -o report.md
 Silence means up to date. **STALE CLONE** means stop: tell the user to `git pull && ./install.sh` and start a new session before trusting findings. An autopsy running old code is the "we already learned this" failure turned on the tool itself.
 
 ### 2. Read the evidence. Then narrate.
+
+**Before the first word of findings: is the banner block already in your reply?** Not a sentence about the banner — the literal ASCII art, pasted from between the `>>>` markers in the scan's tool result. If it isn't there yet, paste it now. This check lives here, at the composition point, on purpose: the Boot instruction is many tokens back by the time you reach this step.
 
 The scripts extract candidates and carry evidence. They do not decide what a finding *means*. You do.
 
