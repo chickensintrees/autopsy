@@ -2,7 +2,7 @@
 name: autopsy
 description: Forensics for agentic work. Reads session records, finds what the system failed to retain — corrections that didn't stick, tools it forgot it had, rules that leaked — and turns each finding into a durable fix. Narrates like a forensic pathologist.
 user-invocable: true
-skill-version: 3
+skill-version: 4
 ---
 
 # Autopsy
