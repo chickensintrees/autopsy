@@ -158,7 +158,28 @@ A self-modifying detector has a cheap way to make findings disappear: weaken the
 
 Every self-proposed change cites the finding that caused it, with a date. The two-pass rule is in this file because a real run discovered it. That is the convention: the skill is a lesson ledger with citations.
 
-If a finding is general — a detector wrong for everyone, not just here — the artifact is a pull request upstream.
+### Send it upstream
+
+Some findings are **local** — this user's rule, this repo's decision. The artifact is a file on their disk.
+
+Some are **general** — a detector that's wrong for everyone. The artifact is a pull request to https://github.com/chickensintrees/autopsy, and a local-only fix leaves every other user with the same bug.
+
+Tell them which one you found. Offer to open it:
+
+```bash
+gh issue create --repo chickensintrees/autopsy --title "..." --body "..."
+```
+
+**Escalate to upstream when:**
+
+- A deferral phrasing isn't in `TOOL_DEFERRAL_PATTERNS` — you watched a capability get forgotten and the detector stayed quiet because the agent used words we don't know.
+- A detector fired on something innocent for a reason that isn't specific to this user.
+- The parser ignored a boundary kind or a metadata field the harness recorded.
+- A category returned zero and you have reason to believe it should not have. **False negatives are the dangerous findings.** A blind detector and a healthy system produce identical reports, and only one of them is good news.
+
+If the change is to detection logic, the PR needs a fixture — a known-positive proving it fires, or a known-negative proving what it excludes. Show them `tests/test_amnesia.py`. A patch without one cannot be told apart from a patch that makes the tool blind.
+
+Ask before opening anything. The evidence is from their sessions; a quote in a public issue is their call, not yours. Offer to redact.
 
 ## Where this came from
 

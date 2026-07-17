@@ -145,7 +145,34 @@ Autopsy can propose changes to autopsy. It may not apply them.
 
 A self-modifying detector has a cheap way to make findings go away: weaken the detector. The report comes back clean either way — that's what makes it dangerous. Detection logic changes have to clear the fixture tests; the two-pass rule and "no finding without a quote" are constitutional and don't get edited as a side effect of a cleanup.
 
-If a finding is general rather than local, the artifact is a PR here.
+## Contributing
+
+**Please send issues and pull requests. This tool gets better the way it says everything else should get better: a finding becomes a durable fix.**
+
+When you run autopsy against your own sessions, you are testing it against a corpus nobody here has. That's the whole value. Your harness, your tools, your habits, your phrasing — all of it is evidence we don't have.
+
+**Open an issue when:**
+
+- A detector missed something you *know* went wrong. False negatives are the dangerous ones, because a scanner that never fires reports the same clean zero as a healthy system. If you can quote the session line it should have caught, that's a complete bug report.
+- A detector fired on something innocent. Paste the quote it flagged and say why it's fine.
+- A finding was real but the proposed artifact was wrong — a rule where a hook belonged, or a fix aimed at the wrong file.
+- The voice hedged. If a report told you things "look good" when they didn't, that's a bug in the control, and it matters as much as a bug in the code.
+
+**Send a PR when:**
+
+- You have a deferral pattern we don't cover. `TOOL_DEFERRAL_PATTERNS` in `scripts/autopsy/amnesia.py` only knows a handful of tools. Every real phrasing you've seen an agent use to hand work back to you is worth adding.
+- You found a boundary kind or a metadata field the parser ignores. The harness records more than we read.
+- A detector is wrong for everyone, not just for you.
+
+**One rule for PRs that touch detection logic: include a fixture.**
+
+`tests/fixtures/` holds tiny synthetic sessions; `tests/test_amnesia.py` shows the shape. A new pattern needs a known-positive proving it fires. A new filter needs a known-negative proving what it excludes — *and* the existing tests still have to pass, because the cheapest way to make a report clean is to make the detector blind, and that change looks identical to a real improvement in the diff. The fixtures are how we tell those apart.
+
+```bash
+python -m unittest discover -s tests
+```
+
+Not a code contributor? Reports are still useful. Run it, and open an issue with what it got wrong about you.
 
 ## License
 
