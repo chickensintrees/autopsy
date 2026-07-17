@@ -71,6 +71,22 @@ Then run `/autopsy` in Claude Code.
 
 Python 3.8+. Standard library only, no dependencies. Sessions are read from `~/.claude/projects/`.
 
+## Where it runs
+
+Autopsy is a **Claude Code** tool, specifically and only. It reads Claude Code's own session logs — `~/.claude/projects/*.jsonl` — and every detector depends on fields only Claude Code writes: `compact_boundary`, `isCompactSummary`, `preCompactDiscoveredTools`. It is not a general "any agent" tool, because its evidence exists only where Claude Code produces it.
+
+To run, it needs three things on the same machine: those session logs, a Python 3.8+ interpreter, and a shell.
+
+| Surface | Runs? | |
+|---|---|---|
+| Claude Code CLI — macOS, Linux, Windows | **Yes** | Windows handled: the installer probes the interpreter by running it (the `python3` Store stub resolves but doesn't run), and every `.ps1` is pure ASCII. |
+| Claude Code desktop app / IDE extensions | **Yes** | Same `~/.claude` on the same machine. |
+| Claude Code on the web / cloud sandbox | **Not out of the box** | A remote sandbox doesn't have your local session logs. Point `--path` at them if they're reachable; otherwise no. |
+| Mobile | **No** | No local shell, Python, or filesystem access to the logs. |
+| Codex, Cursor, other assistants | **No** | Different products. They don't write Claude Code's session schema and don't load `SKILL.md`, so the scripts have nothing to read. Supporting them means a new parser per product, not a config flag. |
+
+**It does not install itself on first invocation.** A skill can't install its own discovery file — `SKILL.md` must be in `~/.claude/skills/` before `/autopsy` exists. So the first install is `clone` + `install.sh`. After that it self-heals: the scripts relocate via a breadcrumb the installer drops, and `version_check.py` warns when your clone is behind `origin/main`.
+
 ## Or just run the scripts
 
 Examples use `python3`; on Windows that's usually `python`.
@@ -83,6 +99,20 @@ python3 scripts/autopsy/run.py --days 30 --banner=minimal -o report.md
 ```
 
 Nothing is sent anywhere. It reads local files and writes local text.
+
+## Optional: enforce the banner with a hook
+
+The banner prints to stderr, and the agent is supposed to paste it into its reply. Four prose fixes each hardened that instruction and none made it certain, because prose can't enforce behavior — a test can, and a hook is a test the harness runs.
+
+`hooks/check_banner_relay.py` is a Claude Code **Stop hook**: if a session runs autopsy and stops without the ASCII art in the reply, it blocks once and tells the agent to paste it. It is silent on every other session, and it nudges exactly once (no loops). Off by default.
+
+```bash
+python hooks/enable.py            # register it in ~/.claude/settings.json (idempotent, backs up)
+python hooks/enable.py --dry-run  # see the exact change first
+python hooks/enable.py --disable  # clean removal
+```
+
+Claude Code CLI/desktop only — Stop hooks don't exist on web, mobile, Codex, or Cursor. This is defense for the surface where autopsy runs, not a portability layer.
 
 ## What it finds
 

@@ -2,7 +2,7 @@
 name: autopsy
 description: Forensics for agentic work. Reads session records, finds what the system failed to retain — corrections that didn't stick, tools it forgot it had, rules that leaked — and turns each finding into a durable fix. Narrates like a forensic pathologist.
 user-invocable: true
-skill-version: 4
+skill-version: 5
 ---
 
 # Autopsy
@@ -28,6 +28,8 @@ Somewhere in it, a lesson was learned and then lost. A correction was given, ack
 *Second incident, same day, right after the fix above: another run wrote "Banner delivered above" in place of the art — it narrated the paste instead of performing it. A sentence describing the banner is not the banner. This is the nastier variant, because a check that scans your reply for the word "banner" passes it; only the literal ASCII block counts. The `>>>` relay markers were added in response (issue #3).*
 
 `--banner=minimal` for scheduled runs. `--banner=tape` if you want the other one.
+
+**There is a hook that enforces this** (`hooks/check_banner_relay.py`, enabled via `hooks/enable.py`). On Claude Code CLI/desktop, if you run autopsy and stop without the art in your reply, the Stop hook blocks once and tells you to paste it. It is optional and off until enabled — but if it fires, that message is not a suggestion. Paste the art. Prose asked four times; the hook is why the fifth is enforced.
 
 ## You may not be running the skill you think you are
 

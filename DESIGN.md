@@ -170,6 +170,36 @@ The name and the voice hold each other up. Kill the metaphor and you kill the co
    Mechanical guardrail: **no finding without a quote and a line number.** The voice
    narrates evidence; it never manufactures it.
 
+### The banner relay, and why it ended in a hook
+
+The rule "paste the banner into your reply" failed, in the wild, five times across the
+first week — and each fix was more prose. The incident (2026-07-17) that produced the
+`>>>` relay markers was the fourth. The fifth failure would have been the sixth prose
+fix. Instead: a hook.
+
+`hooks/check_banner_relay.py` is a Claude Code Stop hook. It reads the transcript for
+"did autopsy produce a banner this turn" and the `last_assistant_message` payload for
+"is the art in the reply" (the transcript lags, so the reply must come from the payload
+or it false-blocks). If autopsy ran and the art is absent, it blocks the stop once —
+`stop_hook_active` guards against looping — and tells the agent to paste it.
+
+This is the durability ranking made concrete: **test > hook > lint > sidecar > comment.**
+The relay markers were the sidecar. The hook is the enforcement. The four prose fixes
+are the evidence that the sidecar wasn't enough — kept, because deleting them would
+invite a sixth.
+
+Scope, and it is a real limit: Stop hooks are Claude Code CLI/desktop only. This does
+nothing on web, mobile, Codex, or Cursor. It is defense-in-depth for the surface where
+autopsy runs, not reach. Off by default; `hooks/enable.py` registers it idempotently
+and reversibly, because editing settings.json is a machine-wide change and a skill
+should not do that silently on install.
+
+*Signature robustness note: the hook matches a **majority** of the banner's art lines,
+not one signature line. A single line is brittle — it depends on which line is longest
+and on the agent pasting that exact one. Majority tolerates a dropped box line and
+still refuses a reply that only talks about the banner. Found while writing the fixture:
+the first cut keyed on the longest line, which was the REC box, not the ASCII letters.*
+
 ### Boot screen
 
 A cold open makes a weekly ritual get run. `Running compaction census...` gets
