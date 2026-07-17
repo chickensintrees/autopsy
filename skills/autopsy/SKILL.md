@@ -2,6 +2,7 @@
 name: autopsy
 description: Forensics for agentic work. Reads session records, finds what the system failed to retain — corrections that didn't stick, tools it forgot it had, rules that leaked — and turns each finding into a durable fix. Narrates like a forensic pathologist.
 user-invocable: true
+skill-version: 2
 ---
 
 # Autopsy
@@ -24,6 +25,14 @@ Somewhere in it, a lesson was learned and then lost. A correction was given, ack
 *Real incident (2026-07-17): a run executed the scan, the banner printed correctly to stderr exactly as designed, and the agent still never showed it to the user — it read the tool output, then narrated straight into the findings without echoing the art. The user had to ask "why no boot screen???" Running the command is necessary. Pasting what it printed is a separate, required step, and the fact that the script "owns" the banner doesn't mean the user automatically sees it.*
 
 `--banner=minimal` for scheduled runs. `--banner=tape` if you want the other one.
+
+## You may not be running the skill you think you are
+
+`run.py` prints `skill-version on disk: N` on stderr every run. **The frontmatter of this file declares its own `skill-version`. Compare them. If they differ, stop** — tell the user to reinstall and start a **new session**, and do not trust the rest of the run.
+
+The harness snapshots SKILL.md when the session starts. Editing the repo does not reach a session already holding a copy. Reinstalling does not either. Only a restart does — which means a fix can be written, committed, installed, and verified on disk, and the run still executes the old one. Nothing about the file system shows this. The version number is the only place the drift becomes visible.
+
+*Real incident (2026-07-17): repo at `6bfe0cc`, installed SKILL.md byte-identical to it, installed that morning at 10:26. The running skill was `cd03f31`'s — seven commits stale. It followed a procedure main had already deleted: it ran `cat assets/boot-flatline.txt` against a directory the installer never populates, and the cold open died. All three defects had been fixed hours earlier. The repo was right and the run was wrong, and the gap was invisible from both sides. This section, `skill-version`, and `scripts/autopsy/freshness.py` exist because of that run.*
 
 ## Voice
 
@@ -83,7 +92,7 @@ python scripts/autopsy/run.py --days 7 --banned-file ~/banned.txt
 python scripts/autopsy/run.py --days 30 -o report.md
 ```
 
-### 4. Read the evidence. Then narrate.
+### 2. Read the evidence. Then narrate.
 
 The scripts extract candidates and carry evidence. They do not decide what a finding *means*. You do.
 
@@ -93,7 +102,7 @@ The scripts extract candidates and carry evidence. They do not decide what a fin
 
 **The body.** Each category, in your own words - never pasted. Quote the evidence. Line numbers, session IDs. The user's exact words when frustrated. The assistant's exact words when wrong.
 
-### 5. The second pass
+### 3. The second pass
 
 Not optional.
 
@@ -106,7 +115,7 @@ The first scan is always too generous. We know this because a previous autopsy r
 
 Run both passes yourself. Report what the first one missed. The user does not do the second pass. You do.
 
-### 6. Turn every finding into an artifact
+### 4. Turn every finding into an artifact
 
 This is the step that makes it a mechanism. Every finding gets an address:
 
@@ -156,7 +165,7 @@ A sidecar nobody points at is never read. A breadcrumb pointing at nothing is no
 
 **Sidecars rot.** That is their defining failure, and it is the same failure as memory: a sidecar records what was true when it was written. Date it. Anchor it. And when a later run finds a sidecar contradicting the code, that contradiction is itself a finding — the artifact lied, and a lie in the record is worse than a gap.
 
-### 7. Stamp the tag
+### 5. Stamp the tag
 
 Close on the toe tag with `CAUSE:` filled in. If nothing was found, the tag says `nothing` — and you say that plainly. A clean autopsy is a real result. Reporting damage that isn't there is the same failure as hiding damage that is.
 

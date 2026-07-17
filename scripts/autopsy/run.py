@@ -25,6 +25,7 @@ from corrections import run_correction_scan, format_corrections
 from regressions import run_regression_scan, format_regressions
 from rules import run_rule_scan, format_rules
 from amnesia import run_amnesia_scan, format_amnesia
+from freshness import read_freshness_warnings, skill_version_on_disk
 
 ASSETS = os.path.join(os.path.dirname(__file__), "..", "..", "assets")
 
@@ -35,9 +36,34 @@ def print_banner(which):
         return
     path = os.path.join(ASSETS, f"boot-{which}.txt")
     if not os.path.exists(path):
+        # Do not fail silent. A missing cold open is the ritual quietly not happening,
+        # which is the exact failure the ritual exists to prevent — and the most likely
+        # cause is an install whose clone was moved or deleted.
+        print(f"[autopsy] Cold open missing: {os.path.normpath(path)}\n"
+              f"[autopsy] The skill is installed but the repo it points at is gone or moved. "
+              f"Re-clone and rerun ./install.sh (or .\\install.ps1).",
+              file=sys.stderr)
         return
     with open(path, "r", encoding="utf-8") as f:
         print(f.read(), file=sys.stderr)
+
+
+def print_freshness(banner):
+    """Is the skill that is running the skill that is on disk?
+
+    Two drifts. `check_freshness` catches repo-vs-installed by reading both files.
+    Nothing can read the agent's context, so installed-vs-running is made checkable
+    instead of checked: print the version on disk and let the agent compare it against
+    the copy it was handed. See freshness.py — 2026-07-17.
+    """
+    version = skill_version_on_disk()
+    if version and banner != "none":
+        print(f"[autopsy] skill-version on disk: {version} -- if the SKILL.md you are "
+              f"running declares a different one, your session is holding a stale "
+              f"snapshot. Reinstall and start a new session before trusting this run.",
+              file=sys.stderr)
+    for warning in read_freshness_warnings():
+        print(f"[autopsy] {warning}", file=sys.stderr)
 
 
 def format_tag(results, cause):
@@ -202,6 +228,7 @@ def main():
     args = parser.parse_args()
 
     print_banner(args.banner)
+    print_freshness(args.banner)
 
     results = run_full_autopsy(
         base_path=args.path,

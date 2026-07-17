@@ -175,9 +175,16 @@ The name and the voice hold each other up. Kill the metaphor and you kill the co
 A cold open makes a weekly ritual get run. `Running compaction census...` gets
 forgotten.
 
-**Ship the art as a static file and `cat` it. Never let the model draw it.**
+**Ship the art as a static file the script reads. Never let the model draw it.**
 Model-rendered ASCII drifts, mangles, and costs tokens every run. A file boots
 identically forever, for free.
+
+*Corrected 2026-07-17: the original said "and `cat` it," meaning the skill should
+`cat` the file itself. That was retired in `b8ea720`/`6bfe0cc` — `run.py` prints the
+banner on stderr every run, and the skill must NOT `cat` it (a second copy in a tool
+result the user never sees). The file lives at `assets/boot-flatline.txt` — not
+`boot.txt`, see below. A sidecar that told the reader to run the deleted procedure is
+exactly the rot this document's own line on sidecars warns about.*
 
 Pure ASCII only — no box-drawing Unicode. This has to render in Git Bash, PowerShell,
 and Windows Terminal without code-page roulette.
@@ -199,8 +206,10 @@ All four variants ship; `--banner` chooses at launch:
 | `--banner=minimal` | D | **Scheduled runs.** Weekly cron shouldn't do the full cold open every Monday. |
 | `--banner=none` | — | Piping to a file. |
 
-A is a static file (`assets/boot.txt`, `cat`-ed). The closing tag needs a small script
-— it carries live fields (subject, intake path, cause).
+A is a static file (`assets/boot-flatline.txt`), read and printed by `run.py` on
+stderr. The closing tag needs a small script — it carries live fields (subject, intake
+path, cause). *File name corrected 2026-07-17: shipped as `boot-flatline.txt`, with
+`boot-tape.txt` and `boot-minimal.txt` alongside; there is no `boot.txt`.*
 
 ---
 
@@ -231,15 +240,18 @@ way.**
 
 ### The fixture test
 
-The golden set is your own history: past autopsy reports whose findings you confirmed
-were real. Keep them; they are fixtures. Point the test at them with `--fixtures`.
+The golden set is anonymized synthetic sessions in `tests/fixtures/`, run by
+`python -m unittest discover -s tests`. Each detector ships a known-positive proving
+it fires and a known-negative proving what it excludes.
 
 **Any proposed change to detection logic runs against them: would this change have
 suppressed a finding we already know was true?** If yes, the proposal fails —
 regardless of how clean it makes this week's report.
 
-A repo of anonymized fixtures ships in `tests/fixtures/` so the test works on a fresh
-install before you have a history of your own.
+*Corrected 2026-07-17: the original described a `--fixtures` flag pointed at "your own
+history" of confirmed reports. That flag was never built; v1 ships static fixtures and
+a standard `unittest` discover instead. The recurrence-history version is roadmap, not
+present tense.*
 
 ### Provenance convention
 
@@ -301,7 +313,10 @@ Inherited from `stef-skills`. These are facts verified on 2026-07-17, not guesse
    (`compaction` | `session_resume` | `cold_start`), and `is_post_compaction` becomes
    `is_post_boundary` + the kind that preceded it.
 
-4. **The severity score is unconsumed.** `run.py:91-101`. Replace, don't port.
+4. ~~**The severity score is unconsumed.** `run.py:91-101`. Replace, don't port.~~
+   **DONE.** The severity score was dropped in v1; `run.py` now reports how many
+   findings need a durable fix. The line reference is stale — those lines are
+   `run_full_autopsy` internals today. *Marked done 2026-07-17.*
 
 5. **No corpus-level view.** Sessions are parsed independently. Recurrence detection
    requires ordering sessions by time and matching events *across* them. This is the
